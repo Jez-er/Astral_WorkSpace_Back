@@ -26,9 +26,11 @@ await ( await fetch("https://ДОМЕН/пример/ссылки", {
 await ( await fetch("https://localhost:3001/api/public/signup", {
   "method": "POST",
   "body": JSON.stringify({
-    "name": "Gravita",
-    "email": "gravita@gmail.ru",
-    "password": "1111"
+     "Name": "Test1",
+      "Email": "Test2@test.com",
+      "Password": "123123",
+      "Displayname": "Test21",
+      "Howdid": "TikTok"
   }),
   "headers": {
     "Content-Type": "application/json"
