@@ -43,7 +43,7 @@ func Signup(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	err = user.CreateUserRecord()
+	err = user.CreateUserRecord(database.GlobalDB)
 	if err != nil {
 		log.Println(err)
 		c.JSON(500, gin.H{

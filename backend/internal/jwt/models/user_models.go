@@ -1,14 +1,11 @@
 package models
 
 import (
-	"Astral/internal/jwt/database"
-
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
-/* Cтруктура юзера для базы данных */
-
+/* Структура юзера для базы данных */
 type User struct {
 	gorm.Model
 	ID          int    `gorm:"primaryKey"`
@@ -20,8 +17,8 @@ type User struct {
 }
 
 /* Создает таблицу по юзеру в базе данных */
-func (u *User) CreateUserRecord() error {
-	result := database.GlobalDB.Create(&u)
+func (u *User) CreateUserRecord(db *gorm.DB) error {
+	result := db.Create(&u)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -45,5 +42,4 @@ func (u *User) CheckPassword(providedPassword string) error {
 		return err
 	}
 	return nil
-
 }
