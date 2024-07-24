@@ -11,10 +11,12 @@ import (
 
 type User struct {
 	gorm.Model
-	ID       int    `gorm:"primaryKey"`
-	Name     string `json:"name" binding:"required" gorm:"unique"`
-	Email    string `json:"email" binding:"required" gorm:"unique"`
-	Password string `json:"password" binding:"required"`
+	ID          int    `gorm:"primaryKey"`
+	Name        string `json:"name" binding:"required" gorm:"unique"`
+	Email       string `json:"email" binding:"required" gorm:"unique"`
+	Password    string `json:"password" binding:"required"`
+	DisplayName string `json:"displayName" binding:"required"`
+	HowDid      string `json:"howDid" binding:"required"`
 }
 
 /* Создает таблицу по юзеру в базе данных */

@@ -57,22 +57,5 @@ await ( await fetch("https://localhost:3001/api/public/login", {
 }) ).json()
 ```
 
-#### Login
-Описание...
-- `/api/public/login` авторизация по почте и паролю (По логину не сделал, не уверен, что надо)
-```javascript
-await ( await fetch("https://localhost:3001/api/public/login", {
-  "method": "POST",
-  (Метод запроса)
-  "body": JSON.stringify({
-    "email": "gravita@gmail.ru",
-    "password": "1111"
-  }),
-  "headers": {
-    "Content-Type": "application/json"
-    (Тут все хедеры что нужны)
-  }
-}) ).json()
-```
 
 Есть еще 2 апи, но они нужны для отправки токена и проверки(никакого осуществимого функционала), есть ли юзер в базе. 
