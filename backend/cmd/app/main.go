@@ -37,5 +37,5 @@ func main() {
 		log.Fatal(err)
 	}
 	router := handlerFunc()
-	router.Run("localhost:8080")
+	router.Run(":3001")
 }

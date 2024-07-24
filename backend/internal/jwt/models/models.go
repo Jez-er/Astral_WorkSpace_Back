@@ -2,6 +2,7 @@ package models
 
 import (
 	"Astral/internal/jwt/database"
+
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -11,6 +12,7 @@ import (
 type User struct {
 	gorm.Model
 	ID       int    `gorm:"primaryKey"`
+	Name     string `json:"name" binding:"required" gorm:"unique"`
 	Email    string `json:"email" binding:"required" gorm:"unique"`
 	Password string `json:"password" binding:"required"`
 }
@@ -23,6 +25,7 @@ func (u *User) CreateUserRecord() error {
 	}
 	return nil
 }
+
 /* Хеширование пароля */
 func (u *User) HashPassword(password string) error {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
@@ -32,6 +35,7 @@ func (u *User) HashPassword(password string) error {
 	u.Password = string(bytes)
 	return nil
 }
+
 /* Сравнивает шифрованный и обыный пароль */
 func (u *User) CheckPassword(providedPassword string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(providedPassword))
