@@ -1,12 +1,11 @@
 package main
 
 import (
-	"Astral/internal/jwt/controllers"
-	"Astral/internal/jwt/database"
-	"Astral/internal/jwt/middleware"
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"Astral/internal/jwt/database"
+	"Astral/internal/App"
 )
 
 func handlerFunc() *gin.Engine {
@@ -15,25 +14,13 @@ func handlerFunc() *gin.Engine {
 		c.String(200, "Welcome To This Website")
 	})
 	api := r.Group("/api")
-	{
-		public := api.Group("/public")
-		{
-
-			public.POST("/login", controllers.Login)
-
-			public.POST("/signup", controllers.Signup)
-		}
-		protected := api.Group("/protected").Use(middleware.AuthZ())
-		{
-			protected.GET("/profile", controllers.Profile)
-		}
-	}
+	routes.LoadRoutes(api) // Загрузка маршрутов из вашего нового маршрутизатора
 	return r
 }
 
 func main() {
 	err := database.InitDatabase()
-	if err != nil {
+	if (err != nil) {
 		log.Fatal(err)
 	}
 	router := handlerFunc()
