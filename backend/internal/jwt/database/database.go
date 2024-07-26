@@ -14,10 +14,10 @@ var GlobalDB *gorm.DB
 /* Функция для подключения базы данных */
 func InitDatabase() (err error) {
 	localhost := "localhost"
-	db := "db"
-	user := "user"
-	port := "5432"
-	pass := "pass"
+	db := "workspace"
+	user := "postgres"
+	port := "5433"
+	pass := "admin"
 	dsn := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s sslmode=disable",
 		localhost,
 		user,
