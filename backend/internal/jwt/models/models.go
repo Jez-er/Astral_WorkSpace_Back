@@ -3,13 +3,14 @@ package models
 import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	
 )
 
 /* Структура юзера для базы данных */
 type User struct {
 	gorm.Model
 	ID          int    `gorm:"primaryKey"`
-	Name        string `json:"name" binding:"required" gorm:"unique"`
+	Name        string `json:"name" binding:"required"`
 	Email       string `json:"email" binding:"required" gorm:"unique"`
 	Password    string `json:"password" binding:"required"`
 	DisplayName string `json:"displayName" binding:"required"`

@@ -1,19 +1,24 @@
 package controllers
 
 import (
-	"log"
 	"Astral/internal/jwt/auth"
 	"Astral/internal/jwt/database"
 	"Astral/internal/jwt/models"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
- 
 type LoginPayload struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
+}
+
+type UsData struct {
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	DisplayName string `json:"displayName"`
 }
 
 /* обновленный токен на возврат */
@@ -56,6 +61,7 @@ func Signup(c *gin.Context) {
 		"Message": "Sucessfully Register",
 	})
 }
+
 /* вход */
 func Login(c *gin.Context) {
 	var payload LoginPayload
@@ -113,5 +119,11 @@ func Login(c *gin.Context) {
 		Token:        signedToken,
 		RefreshToken: signedtoken,
 	}
-	c.JSON(200, tokenResponse)
+	
+
+	c.JSON(200, gin.H{"Tokens": tokenResponse, "UserData": UsData{
+		Name:        user.Name,
+		Email:       user.Email,
+		DisplayName: user.DisplayName,
+	}})
 }
