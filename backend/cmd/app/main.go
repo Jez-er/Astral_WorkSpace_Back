@@ -23,6 +23,7 @@ func main() {
 	if (err != nil) {
 		log.Fatal(err)
 	}
+	
 	router := handlerFunc()
 	router.Run(":3001")
 }
