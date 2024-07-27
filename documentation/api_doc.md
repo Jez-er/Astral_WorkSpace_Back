@@ -19,6 +19,8 @@ await ( await fetch("https://ДОМЕН/пример/ссылки", {
 
 ------
 
+# Авторизация 
+
 #### Singup
 Описание...
 - `/api/public/signup` регистрация по логину, паролю и почте(что бы потом можно было войти по почте или по логину)
@@ -59,5 +61,15 @@ await ( await fetch("https://localhost:3001/api/public/login", {
 }) ).json()
 ```
 
-
-Есть еще 2 апи, но они нужны для отправки токена и проверки(никакого осуществимого функционала), есть ли юзер в базе. 
+#### TokenRefresh
+Функции предназначеная для обновления токенов в случаи их не валидности
+- `/api/public/refresh`
+```javascript
+await ( await fetch("https://localhost:3001/api/public/refresh", {
+  "method": "GET",
+  "body": JSON.stringify({}),
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}) ).json()
+```
