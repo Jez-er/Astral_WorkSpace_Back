@@ -5,11 +5,12 @@ import (
 	"Astral/internal/jwt/database"
 	"Astral/internal/jwt/models"
 	"log"
+	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
-
 type LoginPayload struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
@@ -137,3 +138,77 @@ func Login(c *gin.Context) {
 		DisplayName: user.DisplayName,
 	}})
 }
+
+func RefreshToken(c *gin.Context) {
+	refreshToken, err := c.Cookie("refresh_token")
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"Error": "No refresh token found",
+		})
+		c.Abort()
+		return
+	}
+
+	jwtWrapper := auth.JwtWrapper{
+		SecretKey:         "verysecretkey",
+		Issuer:            "AuthService",
+		ExpirationMinutes: 1,
+		ExpirationHours:   12,
+	}
+
+	claims, err := jwtWrapper.ValidationToken(refreshToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"Error": "Invalid refresh token",
+		})
+		c.Abort()
+		return
+	}
+
+	// Check if the refresh token has expired
+	if claims.ExpiresAt < time.Now().Local().Unix() {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"Error": "Refresh token expired",
+		})
+		c.Abort()
+		return
+	}
+
+	// Refresh tokens
+	signedToken, err := jwtWrapper.GenerateToken(claims.Email)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Error": "Error signing new token",
+		})
+		c.Abort()
+		return
+	}
+
+	signedRefreshToken, err := jwtWrapper.RefreshToken(claims.Email)
+	if err != nil {
+		log.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"Error": "Error signing new refresh token",
+		})
+		c.Abort()
+		return
+	}
+
+	// Set the new refresh token in the cookie
+	c.SetCookie(
+		"refresh_token",
+		signedRefreshToken,
+		60*60*24*30,
+		"/",
+		"localhost",
+		false,
+		true,
+	)
+
+	c.JSON(200, gin.H{
+		"Token":        signedToken,
+		"RefreshToken": signedRefreshToken,
+	})
+}
+

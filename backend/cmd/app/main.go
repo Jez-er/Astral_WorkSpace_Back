@@ -34,11 +34,11 @@ func handlerFunc() *gin.Engine {
 }
 
 func main() {
-    err := database.InitDatabase()
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    router := handlerFunc()
-    router.Run(":3001")
+	err := database.InitDatabase()
+	if (err != nil) {
+		log.Fatal(err)
+	}
+	
+	router := handlerFunc()
+	router.Run(":3001")
 }
