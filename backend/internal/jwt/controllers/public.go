@@ -106,7 +106,7 @@ func Login(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	signedtoken, err := jwtWrapper.RefreshToken(user.Email)
+	signedRefreshToken, err := jwtWrapper.RefreshToken(user.Email)
 	if err != nil {
 		log.Println(err)
 		c.JSON(500, gin.H{
@@ -117,10 +117,20 @@ func Login(c *gin.Context) {
 	}
 	tokenResponse := LoginResponse{
 		Token:        signedToken,
-		RefreshToken: signedtoken,
+		RefreshToken: signedRefreshToken,
 	}
 	
-
+	// Установка рефреш-токена в куки
+	c.SetCookie(
+		"refresh_token",       // имя куки
+		signedRefreshToken,    // значение куки
+		60*60*24*30,           // срок действия куки в секундах (30 дней)
+		"/",                   // путь
+		"localhost",           // домен
+		false,                 // secure (установить true, если используется HTTPS)
+		true,                  // httpOnly
+	)
+	
 	c.JSON(200, gin.H{"Tokens": tokenResponse, "UserData": UsData{
 		Name:        user.Name,
 		Email:       user.Email,
