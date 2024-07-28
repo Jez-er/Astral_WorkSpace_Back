@@ -61,3 +61,49 @@ await ( await fetch("https://localhost:3001/api/public/login", {
 
 
 Есть еще 2 апи, но они нужны для отправки токена и проверки(никакого осуществимого функционала), есть ли юзер в базе. 
+
+------
+
+#### Oauth2 Google
+Описание...
+- `/api/oauth/google` авторизация через google (Тестить надо на странице в браузере)
+```javascript
+await ( await fetch("https://localhost:3001/api/oauth/google", {
+  "method": "GET",
+  (Метод запроса)
+  "body": ,
+  "headers": {
+    "Content-Type": "application/json"
+    (Тут все хедеры что нужны)
+  }
+}) ).json()
+Здесь могу перенаправлять куда угодно после входа и отправлять кучу всего
+`Sub           string `json:"sub"`
+	Name          string `json:"name"`
+	GivenName     string `json:"given_name"`
+	FamilyName    string `json:"family_name"`
+	Profile       string `json:"profile"`
+	Picture       string `json:"picture"`
+	Email         string `json:"email"`
+	EmailVerified bool   `json:"email_verified"`
+	Gender        string `json:"gender"`
+	Hd            string `json:"hd"``
+```
+
+------
+
+
+#### Oauth2 GitHub
+Описание...
+- `/api/oauth/github` авторизация через github (Сейчас не работает,мб из-за того, что нужно где то еще апи получать)
+```javascript
+await ( await fetch("https://localhost:3001/api/oauth/github", {
+  "method": "GET",
+  (Метод запроса)
+  "body": ,
+  "headers": {
+    "Content-Type": "application/json"
+    (Тут все хедеры что нужны)
+  }
+}) ).json()
+```

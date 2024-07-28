@@ -1,11 +1,13 @@
 package database
 
 import (
+	"Astral/internal/jwt/models"
 	"fmt"
 	"log"
+	"os"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"Astral/internal/jwt/models"
 )
 
 /* Глобальная переменная для работы с базой данных */
@@ -14,10 +16,10 @@ var GlobalDB *gorm.DB
 /* Функция для подключения базы данных */
 func InitDatabase() (err error) {
 	localhost := "localhost"
-	db := "workspace"
-	user := "postgres"
-	port := "5433"
-	pass := "admin"
+	db := os.Getenv("DB_DB")
+	user := os.Getenv("DB_USER")
+	port := os.Getenv("DB_PORT")
+	pass := os.Getenv("DB_PASS")
 	dsn := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s sslmode=disable",
 		localhost,
 		user,
