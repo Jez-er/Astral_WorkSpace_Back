@@ -12,6 +12,7 @@ func RegisterPublicRoutes(r *gin.RouterGroup) {
 	{
 		public.POST("/login", controllers.Login)
 		public.POST("/signup", controllers.Signup)
+		public.GET("/refresh", controllers.RefreshToken)
 	}
 	oauth := r.Group("oauth")
 	{
