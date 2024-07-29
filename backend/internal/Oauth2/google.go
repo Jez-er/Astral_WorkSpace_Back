@@ -111,8 +111,8 @@ func GoogleCallBack(ctx *gin.Context) {
 	ctx.JSON(http.StatusSeeOther, gin.H{
 		"Tokens": tokenResponse,
 		"UserData": lr.UsData{
-			Name:        user.Name,
-			DisplayName: user.GivenName,
+			Name:        user.GivenName,
+			DisplayName: user.Name,
 			Email:       user.Email,
 		},
 		"picture": user.Picture})
