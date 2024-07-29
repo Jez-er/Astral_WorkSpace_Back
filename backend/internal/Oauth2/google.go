@@ -1,9 +1,14 @@
 package oauth2
 
 import (
+	"Astral/internal/jwt/auth"
+	lr "Astral/internal/jwt/controllers"
+	db "Astral/internal/jwt/database"
+	md "Astral/internal/jwt/models"
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 
@@ -97,6 +102,67 @@ func GoogleCallBack(ctx *gin.Context) {
 		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+	err = CheckUser(user)
+	if err != nil {
+		ctx.AbortWithError(404, err)
+	}
+	tokenResponse := GetTokens(ctx, user)
 
-	ctx.JSON(http.StatusSeeOther, gin.H{"email": user.Email, "name": user.Name, "picture": user.Picture})
+	ctx.JSON(http.StatusSeeOther, gin.H{
+		"Tokens": tokenResponse,
+		"UserData": lr.UsData{
+			Name:        user.Name,
+			DisplayName: user.GivenName,
+			Email:       user.Email,
+		},
+		"picture": user.Picture})
+}
+
+func GetTokens(ctx *gin.Context, user googleUser) lr.LoginResponse {
+	jwtWrapper := auth.JwtWrapper{
+		SecretKey:         "verysecretkey",
+		Issuer:            "AuthService",
+		ExpirationMinutes: 1,
+		ExpirationHours:   12,
+	}
+
+	signedToken, err := jwtWrapper.GenerateToken(user.Email)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(500, gin.H{
+			"Error": "Error Signing Token",
+		})
+		ctx.Abort()
+
+	}
+	signedRefreshToken, err := jwtWrapper.RefreshToken(user.Email)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(500, gin.H{
+			"Error": "Error Signing Token",
+		})
+		ctx.Abort()
+
+	}
+	tokenResponse := lr.LoginResponse{
+		Token:        signedToken,
+		RefreshToken: signedRefreshToken,
+	}
+	return tokenResponse
+}
+
+func CheckUser(user googleUser) error {
+	var userDB md.User
+	result := db.GlobalDB.Where("email = ?", user.Email).Find(&userDB)
+	if result.RowsAffected == 0 {
+		userDB = md.User{
+            Email: user.Email,
+            Name:  user.Name,
+        }
+        res := db.GlobalDB.Create(&userDB)
+        if res.Error != nil {
+            return res.Error
+        }
+	}
+	return nil
 }
