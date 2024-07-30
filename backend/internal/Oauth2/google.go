@@ -2,11 +2,11 @@ package oauth2
 
 import (
 	"Astral/internal/jwt/auth"
-	lr "Astral/internal/jwt/controllers"
 	db "Astral/internal/jwt/database"
 	md "Astral/internal/jwt/models"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -106,19 +106,7 @@ func GoogleCallBack(ctx *gin.Context) {
 	if err != nil {
 		ctx.AbortWithError(404, err)
 	}
-	tokenResponse := GetTokens(ctx, user)
 
-	ctx.JSON(http.StatusSeeOther, gin.H{
-		"Tokens": tokenResponse,
-		"UserData": lr.UsData{
-			Name:        user.GivenName,
-			DisplayName: user.Name,
-			Email:       user.Email,
-		},
-		"picture": user.Picture})
-}
-
-func GetTokens(ctx *gin.Context, user googleUser) lr.LoginResponse {
 	jwtWrapper := auth.JwtWrapper{
 		SecretKey:         "verysecretkey",
 		Issuer:            "AuthService",
@@ -126,39 +114,44 @@ func GetTokens(ctx *gin.Context, user googleUser) lr.LoginResponse {
 		ExpirationHours:   12,
 	}
 
-	signedToken, err := jwtWrapper.GenerateToken(user.Email)
-	if err != nil {
-		log.Println(err)
-		ctx.JSON(500, gin.H{
-			"Error": "Error Signing Token",
-		})
-		ctx.Abort()
 
-	}
 	signedRefreshToken, err := jwtWrapper.RefreshToken(user.Email)
 	if err != nil {
 		log.Println(err)
-		ctx.JSON(500, gin.H{
-			"Error": "Error Signing Token",
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"Error": "Error signing new refresh token",
 		})
 		ctx.Abort()
+		return
+	}
 
-	}
-	tokenResponse := lr.LoginResponse{
-		Token:        signedToken,
-		RefreshToken: signedRefreshToken,
-	}
-	return tokenResponse
+	// Set the new refresh token in the cookie
+	ctx.SetCookie(
+		"refresh_token",
+		signedRefreshToken,
+		60*60*24*30,
+		"/",
+		"localhost",
+		false,
+		true,
+	)
+
+	url := os.Getenv("FRONT_END_URL")
+
+	ctx.Redirect(http.StatusTemporaryRedirect, url + "/workspaces")
 }
+
 
 func CheckUser(user googleUser) error {
 	var userDB md.User
+	fmt.Println(userDB)
 	result := db.GlobalDB.Where("email = ?", user.Email).Find(&userDB)
 	if result.RowsAffected == 0 {
 		userDB = md.User{
             Email: user.Email,
             Name:  user.Name,
         }
+				fmt.Println(userDB)
         res := db.GlobalDB.Create(&userDB)
         if res.Error != nil {
             return res.Error

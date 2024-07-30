@@ -1,8 +1,9 @@
 package routes
 
 import (
-	"Astral/internal/jwt/controllers"
 	gl "Astral/internal/Oauth2"
+	"Astral/internal/jwt/controllers"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,6 +18,7 @@ func RegisterPublicRoutes(r *gin.RouterGroup) {
 	oauth := r.Group("oauth")
 	{
 		oauth.GET("/google", gl.GoogleOauthLogin)
+		oauth.GET("/google/data", controllers.GetUserInfo)
 		oauth.GET("/github", gl.GithubOauthLogin)
 	}
 

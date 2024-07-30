@@ -4,6 +4,7 @@ import (
 	"Astral/internal/jwt/auth"
 	"Astral/internal/jwt/database"
 	"Astral/internal/jwt/models"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -211,4 +212,46 @@ func RefreshToken(c *gin.Context) {
 		"RefreshToken": signedRefreshToken,
 	})
 }
+
+func GetUserInfo(c *gin.Context) {
+	// Извлечение токена из куки
+	tokenString, err := c.Cookie("refresh_token")
+	if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"Error": "Не предоставлен куки 'refresh_token'"})
+			c.Abort()
+			return
+	}
+
+	// Проверка JWT токена
+	jwtWrapper := auth.JwtWrapper{
+			SecretKey: "verysecretkey",
+			Issuer:    "AuthService",
+	}
+
+	email, err := jwtWrapper.ValidationToken(tokenString)
+	if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"Error": "Неверный токен"})
+			c.Abort()
+			return
+	}
+
+	// Запрос пользователя из базы данных
+	var user models.User
+	fmt.Println(email.Email)
+	if result := database.GlobalDB.Where("email = ?", email.Email).First(&user); result.Error != nil {
+			c.JSON(http.StatusNotFound, gin.H{"Error": "Пользователь не найден"})
+			c.Abort()
+			return
+	}
+
+	// Формирование ответа
+	c.JSON(http.StatusOK, gin.H{
+			"Name":        user.Name,
+			"DisplayName": user.DisplayName,
+			"Email":       user.Email,
+	})
+}
+
+
+
 
