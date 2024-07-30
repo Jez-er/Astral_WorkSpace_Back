@@ -54,8 +54,8 @@ type githubUser struct {
 func getGithubOauthURL() (*oauth2.Config, string) {
 	github_config = &oauth2.Config{
 		RedirectURL:  os.Getenv("CLIENT_CALLBACK_URL_GITHUB"),
-		ClientID:     os.Getenv("CLIENT_ID"),
-		ClientSecret: os.Getenv("CLIENT_SECRET"),
+		ClientID:     os.Getenv("CLIENT_ID_GIT"),
+		ClientSecret: os.Getenv("CLIENT_SECRET_GIT"),
 		Scopes: []string{
 			"user",
 			"repo",
