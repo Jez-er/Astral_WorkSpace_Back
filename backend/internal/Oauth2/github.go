@@ -1,9 +1,14 @@
 package oauth2
 
 import (
+	"Astral/internal/jwt/auth"
+	db "Astral/internal/jwt/database"
+	md "Astral/internal/jwt/models"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 
@@ -14,7 +19,7 @@ import (
 	"golang.org/x/oauth2/github"
 )
 
-var github_config *oauth2.Config
+var githubConfig *oauth2.Config
 
 type githubUser struct {
 	Login             string `json:"login"`
@@ -23,7 +28,7 @@ type githubUser struct {
 	AvatarURL         string `json:"avatar_url"`
 	GravatarID        string `json:"gravatar_id"`
 	URL               string `json:"url"`
-	HTML_URL          string `json:"html_url"`
+	HTMLURL           string `json:"html_url"`
 	FollowersURL      string `json:"followers_url"`
 	FollowingURL      string `json:"following_url"`
 	GistsURL          string `json:"gists_url"`
@@ -44,27 +49,56 @@ type githubUser struct {
 	Bio               string `json:"bio"`
 	TwitterUserName   string `json:"twitter_username"`
 	PublicRepos       int    `json:"public_repos"`
-	PublicGists       int    `json:"public_gits"`
+	PublicGists       int    `json:"public_gists"`
 	Followers         int    `json:"followers"`
 	Following         int    `json:"following"`
 	CreatedAt         string `json:"created_at"`
 	UpdatedAt         string `json:"updated_at"`
 }
 
+type githubEmail struct {
+	Email      string `json:"email"`
+	Primary    bool   `json:"primary"`
+	Verified   bool   `json:"verified"`
+	Visibility string `json:"visibility"`
+}
+
+func getPrimaryEmail(client *http.Client) (string, error) {
+	emailInfo, err := client.Get("https://api.github.com/user/emails")
+	if err != nil {
+		return "", err
+	}
+	defer emailInfo.Body.Close()
+
+	var emails []githubEmail
+	err = json.NewDecoder(emailInfo.Body).Decode(&emails)
+	if err != nil {
+		return "", err
+	}
+
+	for _, email := range emails {
+		if email.Primary {
+			return email.Email, nil
+		}
+	}
+	return "", fmt.Errorf("no primary email found")
+}
+
 func getGithubOauthURL() (*oauth2.Config, string) {
-	github_config = &oauth2.Config{
+	githubConfig = &oauth2.Config{
 		RedirectURL:  os.Getenv("CLIENT_CALLBACK_URL_GITHUB"),
 		ClientID:     os.Getenv("CLIENT_ID_GIT"),
 		ClientSecret: os.Getenv("CLIENT_SECRET_GIT"),
 		Scopes: []string{
 			"user",
 			"repo",
+			"user:email",
 		},
 		Endpoint: github.Endpoint,
 	}
 
 	state := GenerateState()
-	return github_config, state
+	return githubConfig, state
 }
 
 func GithubOauthLogin(ctx *gin.Context) {
@@ -91,13 +125,13 @@ func GithubCallBack(ctx *gin.Context) {
 	}
 
 	code := ctx.Query("code")
-	token, err := github_config.Exchange(ctx, code)
+	token, err := githubConfig.Exchange(ctx, code)
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusUnauthorized, err)
 		return
 	}
 
-	client := github_config.Client(context.TODO(), token)
+	client := githubConfig.Client(context.TODO(), token)
 	userInfo, err := client.Get("https://api.github.com/user")
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
@@ -112,12 +146,65 @@ func GithubCallBack(ctx *gin.Context) {
 	}
 
 	var user githubUser
-	__debug__printJSON(info)
 	err = json.Unmarshal(info, &user)
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	ctx.JSON(http.StatusSeeOther, gin.H{"email": user.Email, "name": user.Name, "picture": user.AvatarURL})
+	primaryEmail, err := getPrimaryEmail(client)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	user.Email = primaryEmail
+
+	jwtWrapper := auth.JwtWrapper{
+		SecretKey:         "verysecretkey",
+		Issuer:            "AuthService",
+		ExpirationMinutes: 1,
+		ExpirationHours:   12,
+	}
+
+	signedRefreshToken, err := jwtWrapper.RefreshToken(user.Email)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"Error": "Error signing new refresh token",
+		})
+		ctx.Abort()
+		return
+	}
+
+	ctx.SetCookie(
+		"refresh_token",
+		signedRefreshToken,
+		60*60*24*30,
+		"/",
+		"localhost",
+		false,
+		true,
+	)
+
+	url := os.Getenv("FRONT_END_URL")
+
+	ctx.Redirect(http.StatusTemporaryRedirect, url + "/workspaces")
+}
+
+
+func CheckUserGit(user githubUser) error {
+	var userDB md.User
+	result := db.GlobalDB.Where("email = ?", user.Email).Find(&userDB)
+	if result.RowsAffected == 0 {
+		userDB = md.User{
+			Email: user.Email,
+			Name:  user.Login,
+			DisplayName: user.Name,
+		}
+		res := db.GlobalDB.Create(&userDB)
+		if res.Error != nil {
+			return res.Error
+		}
+	}
+	return nil
 }

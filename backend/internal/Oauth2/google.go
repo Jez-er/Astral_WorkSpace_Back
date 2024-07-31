@@ -149,7 +149,8 @@ func CheckUser(user googleUser) error {
 	if result.RowsAffected == 0 {
 		userDB = md.User{
             Email: user.Email,
-            Name:  user.Name,
+            Name:  user.GivenName,
+						DisplayName: user.Name,
         }
 				fmt.Println(userDB)
         res := db.GlobalDB.Create(&userDB)
