@@ -1,12 +1,11 @@
 package oauth2
 
 import (
-	"bytes"
+	/* "bytes"
 	"encoding/json"
-	"errors"
-	"log"
+	"log" */
 	"os"
-
+    "errors"
 	"github.com/rs/xid"
 )
 
@@ -86,8 +85,8 @@ func (c *ClientOption) GetRedirectURL() string {
 func GenerateState() string {
 	return xid.New().String()
 }
-
-func __debug__printJSON(js []byte) {
+/* Дебаг функция для вывода всех данных */
+/* func __debug__printJSON(js []byte) {
 	var prettyJSON bytes.Buffer
 	err := json.Indent(&prettyJSON, js, "", "\n")
 
@@ -98,4 +97,4 @@ func __debug__printJSON(js []byte) {
 	} else {
 		log.Println("Println Json error = ", err)
 	}
-}
+} */

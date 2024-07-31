@@ -97,7 +97,7 @@ await ( await fetch("https://localhost:3001/api/oauth/google", {
 
 #### Oauth2 GitHub
 Описание...
-- `/api/oauth/github` авторизация через github (Сейчас не работает,мб из-за того, что нужно где то еще апи получать)
+- `/api/oauth/github` авторизация через github 
 ```javascript
 await ( await fetch("https://localhost:3001/api/oauth/github", {
   "method": "GET",

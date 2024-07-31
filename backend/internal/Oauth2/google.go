@@ -70,7 +70,7 @@ func GoogleCallBack(ctx *gin.Context) {
 		return
 	}
 
-	// Authorization Code google(resource) AccessToken
+	// Код авторизации Google (ресурс) AccessToken
 	code := ctx.Query("code")
 	token, err := google_config.Exchange(ctx, code)
 	if err != nil {
@@ -78,7 +78,7 @@ func GoogleCallBack(ctx *gin.Context) {
 		return
 	}
 
-	// AccessToken google
+	// Токен доступа Google
 	client := google_config.Client(context.TODO(), token)
 	userInfo, err := client.Get("https://www.googleapis.com/oauth2/v3/userinfo")
 	if err != nil {
@@ -126,7 +126,7 @@ func GoogleCallBack(ctx *gin.Context) {
 		return
 	}
 
-	// Set the new refresh token in the cookie
+	// Установите новый токен обновления в файле cookie.
 	ctx.SetCookie(
 		"refresh_token",
 		signedRefreshToken,
