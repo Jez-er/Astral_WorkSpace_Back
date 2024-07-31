@@ -57,8 +57,8 @@ func getGithubOauthURL() (*oauth2.Config, string) {
 		ClientID:     os.Getenv("CLIENT_ID_GIT"),
 		ClientSecret: os.Getenv("CLIENT_SECRET_GIT"),
 		Scopes: []string{
-			"user",
-			"repo",
+			"https://www.googleapis.com/auth/userinfo.profile",
+			"https://www.googleapis.com/auth/userinfo.email",
 		},
 		Endpoint: github.Endpoint,
 	}
@@ -118,6 +118,14 @@ func GithubCallBack(ctx *gin.Context) {
 		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+	userGG := GGUser{
+		Name: user.Name,
+		Email: user.Email,
+	}
+	err = CheckUser(userGG)
+	if err != nil {
+		ctx.AbortWithError(404, err)
+	}
 
-	ctx.JSON(http.StatusSeeOther, gin.H{"email": user.Email, "name": user.Name, "picture": user.AvatarURL})
+	ctx.JSON(http.StatusSeeOther, gin.H{"User": user})
 }

@@ -2,11 +2,8 @@ package oauth2
 
 import (
 	"Astral/internal/jwt/auth"
-	db "Astral/internal/jwt/database"
-	md "Astral/internal/jwt/models"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -102,7 +99,11 @@ func GoogleCallBack(ctx *gin.Context) {
 		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	err = CheckUser(user)
+	userGG := GGUser{
+		Name: user.Name,
+		Email: user.Email,
+	}
+	err = CheckUser(userGG)
 	if err != nil {
 		ctx.AbortWithError(404, err)
 	}
@@ -113,7 +114,6 @@ func GoogleCallBack(ctx *gin.Context) {
 		ExpirationMinutes: 1,
 		ExpirationHours:   12,
 	}
-
 
 	signedRefreshToken, err := jwtWrapper.RefreshToken(user.Email)
 	if err != nil {
@@ -138,24 +138,5 @@ func GoogleCallBack(ctx *gin.Context) {
 
 	url := os.Getenv("FRONT_END_URL")
 
-	ctx.Redirect(http.StatusTemporaryRedirect, url + "/workspaces")
-}
-
-
-func CheckUser(user googleUser) error {
-	var userDB md.User
-	fmt.Println(userDB)
-	result := db.GlobalDB.Where("email = ?", user.Email).Find(&userDB)
-	if result.RowsAffected == 0 {
-		userDB = md.User{
-            Email: user.Email,
-            Name:  user.Name,
-        }
-				fmt.Println(userDB)
-        res := db.GlobalDB.Create(&userDB)
-        if res.Error != nil {
-            return res.Error
-        }
-	}
-	return nil
+	ctx.Redirect(http.StatusTemporaryRedirect, url+"/workspaces")
 }
