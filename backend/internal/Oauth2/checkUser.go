@@ -9,6 +9,7 @@ import (
 type GGUser struct {
 	Name        string `json:"name"`
 	Email       string `json:"email"`
+	DisplayName string `json:"displayName"`
 }
 
 func CheckUser(user GGUser) error {
@@ -28,3 +29,5 @@ func CheckUser(user GGUser) error {
 	}
 	return nil
 }
+
+
