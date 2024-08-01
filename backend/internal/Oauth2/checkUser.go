@@ -4,6 +4,8 @@ import (
 	db "Astral/internal/jwt/database"
 	md "Astral/internal/jwt/models"
 	"fmt"
+
+	"github.com/google/uuid"
 )
 
 type GGUser struct {
@@ -18,8 +20,9 @@ func CheckUser(user GGUser) error {
 	result := db.GlobalDB.Where("email = ?", user.Email).Find(&userDB)
 	if result.RowsAffected == 0 {
 		userDB = md.User{
-			Email: user.Email,
-			Name:  user.Name,
+			UserId: uuid.New().String(),
+			Email:   user.Email,
+			Name:    user.Name,
 		}
 		fmt.Println(userDB)
 		res := db.GlobalDB.Create(&userDB)
@@ -29,5 +32,3 @@ func CheckUser(user GGUser) error {
 	}
 	return nil
 }
-
-

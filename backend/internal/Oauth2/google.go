@@ -100,9 +100,8 @@ func GoogleCallBack(ctx *gin.Context) {
 		return
 	}
 	userGG := GGUser{
-		Name:        user.Name,
-		Email:       user.Email,
-		DisplayName: user.GivenName,
+		Name:  user.Name,
+		Email: user.Email,
 	}
 	err = CheckUser(userGG)
 	if err != nil {

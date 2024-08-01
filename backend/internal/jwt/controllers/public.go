@@ -10,8 +10,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
+
 type LoginPayload struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
@@ -32,6 +34,9 @@ type LoginResponse struct {
 /* регистрация */
 func Signup(c *gin.Context) {
 	var user models.User
+	user = models.User{
+		UserId: uuid.New().String(),
+	}
 	err := c.ShouldBindJSON(&user)
 	if err != nil {
 		log.Println(err)
@@ -121,18 +126,18 @@ func Login(c *gin.Context) {
 		Token:        signedToken,
 		RefreshToken: signedRefreshToken,
 	}
-	
+
 	// Установка рефреш-токена в куки
 	c.SetCookie(
-		"refresh_token",       // имя куки
-		signedRefreshToken,    // значение куки
-		60*60*24*30,           // срок действия куки в секундах (30 дней)
-		"/",                   // путь
-		"localhost",           // домен
-		false,                 // secure (установить true, если используется HTTPS)
-		true,                  // httpOnly
+		"refresh_token",    // имя куки
+		signedRefreshToken, // значение куки
+		60*60*24*30,        // срок действия куки в секундах (30 дней)
+		"/",                // путь
+		"localhost",        // домен
+		false,              // secure (установить true, если используется HTTPS)
+		true,               // httpOnly
 	)
-	
+
 	c.JSON(200, gin.H{"Tokens": tokenResponse, "UserData": UsData{
 		Name:        user.Name,
 		Email:       user.Email,
@@ -217,41 +222,37 @@ func GetUserInfo(c *gin.Context) {
 	// Извлечение токена из куки
 	tokenString, err := c.Cookie("refresh_token")
 	if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"Error": "Не предоставлен куки 'refresh_token'"})
-			c.Abort()
-			return
+		c.JSON(http.StatusUnauthorized, gin.H{"Error": "Не предоставлен куки 'refresh_token'"})
+		c.Abort()
+		return
 	}
 
 	// Проверка JWT токена
 	jwtWrapper := auth.JwtWrapper{
-			SecretKey: "verysecretkey",
-			Issuer:    "AuthService",
+		SecretKey: "verysecretkey",
+		Issuer:    "AuthService",
 	}
 
 	email, err := jwtWrapper.ValidationToken(tokenString)
 	if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"Error": "Неверный токен"})
-			c.Abort()
-			return
+		c.JSON(http.StatusUnauthorized, gin.H{"Error": "Неверный токен"})
+		c.Abort()
+		return
 	}
 
 	// Запрос пользователя из базы данных
 	var user models.User
 	fmt.Println(email.Email)
 	if result := database.GlobalDB.Where("email = ?", email.Email).First(&user); result.Error != nil {
-			c.JSON(http.StatusNotFound, gin.H{"Error": "Пользователь не найден"})
-			c.Abort()
-			return
+		c.JSON(http.StatusNotFound, gin.H{"Error": "Пользователь не найден"})
+		c.Abort()
+		return
 	}
 
 	// Формирование ответа
 	c.JSON(http.StatusOK, gin.H{
-			"Name":        user.Name,
-			"DisplayName": user.DisplayName,
-			"Email":       user.Email,
+		"Name":        user.Name,
+		"DisplayName": user.DisplayName,
+		"Email":       user.Email,
 	})
 }
-
-
-
-

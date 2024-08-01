@@ -109,3 +109,89 @@ await ( await fetch("https://localhost:3001/api/oauth/github", {
   }
 }) ).json()
 ```
+
+------
+
+#### Create WorkSpace
+Описание...
+- `/api/workspace/createSpace` Создание пространства  
+```javascript
+await ( await fetch("https://localhost:3001/api/workspace/createSpace", {
+  "method": "POST",
+  "body":JSON.stringify({
+    "UserID": uuid пользователя, с аккаунта которого выполняется запрос,
+    "description": "Бла бла бла",
+    "title": "Name",
+    "logoColor":"#ffffff"
+  }), ,
+  "headers": {
+    "Content-Type": "application/json"
+    (Тут все хедеры что нужны)
+  }
+}) ).json()
+```
+
+------
+
+#### Update WorkSpace
+Описание...
+- `/api/workspace/updateSpace/:id` Обновление пространства
+```javascript
+await ( await fetch("https://localhost:3001/api/workspace/updateSpace/:id", { // ID рабочего пространства
+  "method": "PUT",
+  "body":JSON.stringify({
+    "description": "Новый Бла бла бла",
+    "title": "новый Name",
+    "logoColor":"новый #ffffff"
+  }), ,
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}) ).json()
+```
+
+------
+
+#### Delete WorkSpace
+Описание...
+- `/api/workspace/deleteSpace/:id` Удаление пространства
+```javascript
+await ( await fetch("https://localhost:3001/api/workspace/deleteSpace/:id", { // ID рабочего пространства
+  "method": "DELETE",
+  "body": ,
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}) ).json()
+```
+
+------
+
+#### Get WorkSpaces
+Описание...
+- `/api/workspace/getSpaces/:user_id` Запрос на все пространства
+```javascript
+await ( await fetch("https://localhost:3001/api/workspace/getSpaces/:user_id", { // ID пользователя
+  "method": "GET",
+  "body": ,
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}) ).json()
+```
+
+------
+
+#### Get WorkSpace
+Описание...
+- `/api/workspace/getSpaces/:user_id` Запрос на 1 пространствo
+```javascript
+await ( await fetch("https://localhost:3001/api/workspace/getSpaces/:user_id", { // ID рабочего пространства
+  "method": "GET",
+  "body": ,
+  "headers": {
+    "Content-Type": "application/json"
+  }
+}) ).json()
+```
+

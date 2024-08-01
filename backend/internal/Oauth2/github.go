@@ -150,9 +150,8 @@ func GithubCallBack(ctx *gin.Context) {
 		return
 	}
 	userGG := GGUser{
-		Name:        user.Login,
-		Email:       user.Email,
-		DisplayName: user.Name,
+		Name:  user.Login,
+		Email: user.Email,
 	}
 	err = CheckUser(userGG)
 	if err != nil {
