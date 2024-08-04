@@ -82,31 +82,34 @@ func UpdateSpace(c *gin.Context) {
 		"WorkSpace": workspace,
 	})
 }
- // Все пространства
-func GetWorkspaces(c *gin.Context) {
-	id := c.Param("user_id") // ID пользователя
-	var workspace models.Workspace
 
-	res := database.GlobalDB.Find(&workspace, "id = ?", id)
-	if res.RowsAffected == 0 {
+// Все пространства
+func GetWorkspaces(c *gin.Context) {
+	user := c.Param("user")
+	workspace := []*models.Workspace{}
+	res := database.GlobalDB.Find(&workspace, "key = ?", user)
+
+	if res.Error != nil {
 		c.JSON(500, gin.H{
 			"Error": "Error Get WorkSpaces",
 			"Err":   res.Error,
 		})
-		c.Abort()
+		return
 	}
+
 	c.JSON(200, gin.H{
-		"Message":   "Get WorkSpaces",
-		"WorkSpace": workspace,
+		"Message":    "Get WorkSpaces",
+		"WorkSpaces": workspace,
 	})
 }
- // 1 пространство
+
+// 1 пространство
 func GetWorkspace(c *gin.Context) {
-	id := c.Param("user_id") // ID рабочего пространства
+	id := c.Param("id") // ID рабочего пространства
 	var workspace models.Workspace
 
 	res := database.GlobalDB.Find(&workspace, "id = ?", id)
-	if res.RowsAffected == 0 {
+	if res.Error != nil {
 		c.JSON(500, gin.H{
 			"Error": "Error Get WorkSpaces",
 			"Err":   res.Error,

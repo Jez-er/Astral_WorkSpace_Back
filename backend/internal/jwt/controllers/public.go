@@ -20,6 +20,7 @@ type LoginPayload struct {
 }
 
 type UsData struct {
+	UserId      string `json:"user_id"`
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	DisplayName string `json:"displayName"`
@@ -142,6 +143,7 @@ func Login(c *gin.Context) {
 		Name:        user.Name,
 		Email:       user.Email,
 		DisplayName: user.DisplayName,
+		UserId:      user.UserId,
 	}})
 }
 

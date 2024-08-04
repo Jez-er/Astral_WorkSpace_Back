@@ -184,9 +184,9 @@ await ( await fetch("https://localhost:3001/api/workspace/getSpaces/:user_id", {
 
 #### Get WorkSpace
 Описание...
-- `/api/workspace/getSpaces/:user_id` Запрос на 1 пространствo
+- `/api/workspace/getSpace/:user_id` Запрос на 1 пространствo
 ```javascript
-await ( await fetch("https://localhost:3001/api/workspace/getSpaces/:user_id", { // ID рабочего пространства
+await ( await fetch("https://localhost:3001/api/workspace/getSpace/:id", { // ID рабочего пространства
   "method": "GET",
   "body": ,
   "headers": {

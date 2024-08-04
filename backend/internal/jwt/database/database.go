@@ -31,7 +31,7 @@ func InitDatabase() (err error) {
 	if err != nil {
 		return err
 	}
-	err = GlobalDB.AutoMigrate(&models.User{}) // Используем структуру из models
+	err = GlobalDB.AutoMigrate(&models.User{},&models.Workspace{}) // Используем структуру из models
 	if err != nil {
 		log.Fatal("Error connecting to the database...", err)
 	}

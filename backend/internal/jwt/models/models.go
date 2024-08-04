@@ -8,23 +8,24 @@ import (
 /* Структура юзера для базы данных */
 type User struct {
 	gorm.Model
-	UserId      string `gorm:"primarykey"`
-	Name        string `json:"name" binding:"required"`
-	Email       string `json:"email" binding:"required" gorm:"unique"`
-	Password    string `json:"password" binding:"required"`
-	DisplayName string `json:"displayName" binding:"required"`
-	HowDid      string `json:"howDid" binding:"required"`
-	WorkSpace   Workspace
+	UserId      string    `gorm:"primarykey"`
+	Name        string    `json:"name" binding:"required"`
+	Email       string    `json:"email" binding:"required" gorm:"unique"`
+	Password    string    `json:"password" binding:"required"`
+	DisplayName string    `json:"displayName" binding:"required"`
+	HowDid      string    `json:"howDid" binding:"required"`
+	WorkspaceID uint      // Это поле будет использоваться как внешний ключ
+	WorkSpace   Workspace `gorm:"foreignKey:WorkspaceID"` // Указываем, что это поле является внешним ключом
 }
 
 /* Структура рабочего простарнства */
 type Workspace struct {
 	gorm.Model
-	ID          string `gorm:"primarykey"`
-	UserID      string
-	Title       string `json:"title" binding:"required"`
-	Description string `json:"description" binding:"required"`
-	LogoColor   string `json:"logoColor" binding:"required"`
+	ID          uint   `gorm:"primarykey"`
+	Key         string `json:"key"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	LogoColor   string `json:"logoColor"`
 }
 
 /* Создает таблицу по юзеру в базе данных */
