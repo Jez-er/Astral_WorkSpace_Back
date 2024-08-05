@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"Astral/internal/App/database"
 	"Astral/internal/jwt/auth"
-	"Astral/internal/jwt/database"
 	"Astral/internal/jwt/models"
 	"fmt"
 	"log"

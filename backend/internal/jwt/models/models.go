@@ -1,6 +1,8 @@
 package models
 
 import (
+	workspace_models "Astral/internal/workspace/models"
+
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -15,18 +17,9 @@ type User struct {
 	DisplayName string    `json:"displayName" binding:"required"`
 	HowDid      string    `json:"howDid" binding:"required"`
 	WorkspaceID uint      // Это поле будет использоваться как внешний ключ
-	WorkSpace   Workspace `gorm:"foreignKey:WorkspaceID"` // Указываем, что это поле является внешним ключом
+	WorkSpace   workspace_models.Workspace `gorm:"foreignKey:WorkspaceID"` // Указываем, что это поле является внешним ключом
 }
 
-/* Структура рабочего простарнства */
-type Workspace struct {
-	gorm.Model
-	ID          uint   `gorm:"primarykey"`
-	Key         string `json:"key"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	LogoColor   string `json:"logoColor"`
-}
 
 /* Создает таблицу по юзеру в базе данных */
 func (u *User) CreateUserRecord(db *gorm.DB) error {
@@ -52,14 +45,6 @@ func (u *User) CheckPassword(providedPassword string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(providedPassword))
 	if err != nil {
 		return err
-	}
-	return nil
-}
-
-func (w *Workspace) CreateWorkSpaceRecord(db *gorm.DB) error {
-	result := db.Create(&w)
-	if result.Error != nil {
-		return result.Error
 	}
 	return nil
 }

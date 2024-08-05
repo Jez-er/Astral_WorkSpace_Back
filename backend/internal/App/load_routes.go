@@ -1,9 +1,10 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
 	"Astral/internal/jwt/routes"
-	"Astral/internal/workspace" // Импортируем ваши маршруты
+	workspace "Astral/internal/workspace/routes" // Импортируем ваши маршруты
+
+	"github.com/gin-gonic/gin"
 )
 
 // LoadRoutes загружает маршруты из всех файлов в папке routes внутри internal и её поддиректорий

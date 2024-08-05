@@ -2,7 +2,7 @@ package main
 
 import (
 	routes "Astral/internal/App"
-	"Astral/internal/jwt/database"
+	"Astral/internal/App/database"
 	"log"
 	"os"
 

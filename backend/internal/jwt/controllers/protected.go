@@ -1,12 +1,13 @@
 package controllers
 
 import (
-	"Astral/internal/jwt/database"
+	"Astral/internal/App/database"
 	"Astral/internal/jwt/models"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
 /* проверка есть ли пользователь в базе */
 func Profile(c *gin.Context) {
 

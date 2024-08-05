@@ -1,15 +1,15 @@
-package workspace
+package workspace_controller
 
 import (
-	"Astral/internal/jwt/database"
-	"Astral/internal/jwt/models"
+	"Astral/internal/App/database"
+	workspace_models "Astral/internal/workspace/models"
 	"log"
 
 	"github.com/gin-gonic/gin"
 )
 
 func CreateSpace(c *gin.Context) {
-	var workspace models.Workspace
+	var workspace workspace_models.Workspace
 	err := c.ShouldBindJSON(&workspace)
 	if err != nil {
 		log.Println(err)
@@ -36,7 +36,7 @@ func CreateSpace(c *gin.Context) {
 
 func DeleteSpace(c *gin.Context) {
 	id := c.Param("id") // ID рабочего пространства
-	var workspace models.Workspace
+	var workspace workspace_models.Workspace
 
 	res := database.GlobalDB.Where("id = ?", id).Delete(&workspace)
 	if res.RowsAffected == 0 {
@@ -53,7 +53,7 @@ func DeleteSpace(c *gin.Context) {
 
 func UpdateSpace(c *gin.Context) {
 	id := c.Param("id") // ID рабочего пространства
-	var workspace models.Workspace
+	var workspace workspace_models.Workspace
 
 	err := c.ShouldBindJSON(&workspace)
 	if err != nil {
@@ -65,7 +65,7 @@ func UpdateSpace(c *gin.Context) {
 		return
 	}
 	res := database.GlobalDB.Model(&workspace).Where("id = ?", id).Updates(
-		models.Workspace{
+		workspace_models.Workspace{
 			Title:       workspace.Title,
 			Description: workspace.Description,
 			LogoColor:   workspace.LogoColor,
@@ -86,7 +86,7 @@ func UpdateSpace(c *gin.Context) {
 // Все пространства
 func GetWorkspaces(c *gin.Context) {
 	user := c.Param("user")
-	workspace := []*models.Workspace{}
+	workspace := []*workspace_models.Workspace{}
 	res := database.GlobalDB.Find(&workspace, "key = ?", user)
 
 	if res.Error != nil {
@@ -106,7 +106,7 @@ func GetWorkspaces(c *gin.Context) {
 // 1 пространство
 func GetWorkspace(c *gin.Context) {
 	id := c.Param("id") // ID рабочего пространства
-	var workspace models.Workspace
+	var workspace workspace_models.Workspace
 
 	res := database.GlobalDB.Find(&workspace, "id = ?", id)
 	if res.Error != nil {

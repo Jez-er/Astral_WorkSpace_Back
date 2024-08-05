@@ -1,7 +1,7 @@
 package oauth2
 
 import (
-	db "Astral/internal/jwt/database"
+	db "Astral/internal/App/database"
 	md "Astral/internal/jwt/models"
 	"fmt"
 
