@@ -4,6 +4,7 @@ import (
 	"Astral/internal/App/database"
 	"Astral/internal/jwt/auth"
 	"Astral/internal/jwt/models"
+	ws "Astral/internal/workspace/models"
 	"fmt"
 	"log"
 	"net/http"
@@ -34,9 +35,16 @@ type LoginResponse struct {
 
 /* регистрация */
 func Signup(c *gin.Context) {
-	var user models.User
-	user = models.User{
-		UserId: uuid.New().String(),
+	id := uuid.New().String()
+	user := models.User{
+		UserId:      id,
+		WorkspaceID: 1,
+		WorkSpace: ws.Workspace{
+			Key:         id,
+			Title:       "First Name",
+			Description: "Test",
+			LogoColor:   "#fffff",
+		},
 	}
 	err := c.ShouldBindJSON(&user)
 	if err != nil {

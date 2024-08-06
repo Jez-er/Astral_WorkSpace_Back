@@ -16,6 +16,7 @@ type User struct {
 	Password    string    `json:"password" binding:"required"`
 	DisplayName string    `json:"displayName" binding:"required"`
 	HowDid      string    `json:"howDid" binding:"required"`
+	Image 		string 	  `json:"image"`
 	WorkspaceID uint      // Это поле будет использоваться как внешний ключ
 	WorkSpace   workspace_models.Workspace `gorm:"foreignKey:WorkspaceID"` // Указываем, что это поле является внешним ключом
 }
