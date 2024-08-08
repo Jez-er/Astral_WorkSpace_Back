@@ -1,6 +1,7 @@
 package routes
 
 import (
+	common_routes "Astral/internal/common/routes"
 	"Astral/internal/jwt/routes"
 	workspace "Astral/internal/workspace/routes" // Импортируем ваши маршруты
 
@@ -14,4 +15,6 @@ func LoadRoutes(router *gin.RouterGroup) {
 	routes.RegisterProtectedRoutes(router)
 	/* Рабочие пространство */
 	workspace.WorkSpacePublicRoutes(router)
+	/* Коммон */
+	common_routes.CommonRoutes(router)
 }
