@@ -8,12 +8,13 @@ import (
 type Workspace struct {
 	gorm.Model
 	ID          uint   `gorm:"primarykey"`
-	Key         string `json:"key"`
-	Title       string `json:"title"`
+	Key         string `json:"key" binding:"required"`
+	Key2        string `json:"key2"`
+	Key3        string `json:"key3"`
+	Title       string `json:"title" binding:"required"`
 	Description string `json:"description"`
-	LogoColor   string `json:"logoColor"`
+	LogoColor   string `json:"logoColor" binding:"required"`
 }
-
 
 func (w *Workspace) CreateWorkSpaceRecord(db *gorm.DB) error {
 	result := db.Create(&w)

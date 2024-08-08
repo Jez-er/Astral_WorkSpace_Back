@@ -12,7 +12,9 @@ func WorkSpacePublicRoutes(r *gin.RouterGroup) {
 		workspace.POST("/createSpace", workspace_controller.CreateSpace)
 		workspace.DELETE("/deleteSpace/:id", workspace_controller.DeleteSpace) // ID рабочего пространства
 		workspace.PUT("/updateSpace/:id", workspace_controller.UpdateSpace) // ID рабочего пространства
-		workspace.GET("getSpaces/:user", workspace_controller.GetWorkspaces) // ID пользователя
-		workspace.GET("getSpace/:id", workspace_controller.GetWorkspace) // ID рабочего пространства
+		workspace.GET("/getSpaces/:user", workspace_controller.GetWorkspaces) // ID пользователя
+		workspace.GET("/getSpace/:id", workspace_controller.GetWorkspace) // ID рабочего пространства
+		workspace.PUT("/addSecondUser/",workspace_controller.AddSecondUser) 
+		workspace.PUT("/addThirdUser/",workspace_controller.AddThirdUser) 
 	}
 }

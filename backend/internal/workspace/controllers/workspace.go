@@ -8,6 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type AddUserStruct struct {
+	ID   uint   `json:"id"`
+	Key string `json:"key"`
+}
+
 func CreateSpace(c *gin.Context) {
 	var workspace workspace_models.Workspace
 	err := c.ShouldBindJSON(&workspace)
@@ -29,8 +34,7 @@ func CreateSpace(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{
-		"Message": "Sucessfully Created WorkSpace",
-		"Space":   workspace,
+		"Space": workspace,
 	})
 }
 
@@ -78,7 +82,6 @@ func UpdateSpace(c *gin.Context) {
 		c.Abort()
 	}
 	c.JSON(200, gin.H{
-		"Message":   "Updated WorkSpace",
 		"WorkSpace": workspace,
 	})
 }
@@ -87,7 +90,7 @@ func UpdateSpace(c *gin.Context) {
 func GetWorkspaces(c *gin.Context) {
 	user := c.Param("user")
 	workspace := []*workspace_models.Workspace{}
-	res := database.GlobalDB.Find(&workspace, "key = ?", user)
+	res := database.GlobalDB.Where("? IN (key, key2, key3)", user).Find(&workspace)
 
 	if res.Error != nil {
 		c.JSON(500, gin.H{
@@ -98,7 +101,6 @@ func GetWorkspaces(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"Message":    "Get WorkSpaces",
 		"WorkSpaces": workspace,
 	})
 }
@@ -117,7 +119,85 @@ func GetWorkspace(c *gin.Context) {
 		c.Abort()
 	}
 	c.JSON(200, gin.H{
-		"Message":   "Get WorkSpaces",
 		"WorkSpace": workspace,
+	})
+}
+
+
+func AddSecondUser(c *gin.Context) {
+	var addUsers AddUserStruct
+	var workspace workspace_models.Workspace
+
+	// Привязка JSON из запроса к структуре
+	if err := c.ShouldBindJSON(&addUsers); err != nil {
+		log.Println(err)
+		c.JSON(400, gin.H{
+			"Error": "Invalid Inputs",
+		})
+		return
+	}
+
+	// Поиск рабочего пространства по ID и ключу key2
+	res := database.GlobalDB.Where("id = ?", addUsers.ID,).First(&workspace)
+	if res.Error != nil {
+		log.Println("Workspace not found:", res.Error)
+		c.JSON(404, gin.H{
+			"Error": "Workspace not found",
+		})
+		return
+	}
+
+	// Обновление рабочего пространства
+	res = database.GlobalDB.Model(&workspace).Where("id = ?", addUsers.ID).Updates(workspace_models.Workspace{
+		Key2: addUsers.Key, 
+	})
+	if res.Error != nil {
+		log.Println("Error updating workspace:", res.Error)
+		c.JSON(500, gin.H{
+			"Error": "Failed to update workspace",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"Message": "success",
+	})
+}
+
+func AddThirdUser(c *gin.Context) {
+	var addUsers AddUserStruct
+	var workspace workspace_models.Workspace
+
+	// Привязка JSON из запроса к структуре
+	if err := c.ShouldBindJSON(&addUsers); err != nil {
+		log.Println(err)
+		c.JSON(400, gin.H{
+			"Error": "Invalid Inputs",
+		})
+		return
+	}
+
+	// Поиск рабочего пространства по ID и ключу key2
+	res := database.GlobalDB.Where("id = ?", addUsers.ID,).First(&workspace)
+	if res.Error != nil {
+		log.Println("Workspace not found:", res.Error)
+		c.JSON(404, gin.H{
+			"Error": "Workspace not found",
+		})
+		return
+	}
+
+	// Обновление рабочего пространства
+	res = database.GlobalDB.Model(&workspace).Where("id = ?", addUsers.ID).Updates(workspace_models.Workspace{
+		Key3: addUsers.Key, 
+	})
+	if res.Error != nil {
+		log.Println("Error updating workspace:", res.Error)
+		c.JSON(500, gin.H{
+			"Error": "Failed to update workspace",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"Message": "success",
 	})
 }
