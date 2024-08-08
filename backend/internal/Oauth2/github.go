@@ -164,16 +164,16 @@ func GithubCallBack(ctx *gin.Context) {
 		ExpirationHours:   12,
 	}
 
-	// userGG := GGUser{
-	// 	Name:  user.Login,
-	// 	Email: user.Email,
-	// 	DisplayName: user.Name,
-	// }
-	// err = CheckUser(userGG)
-	// if err != nil {
-	// 	ctx.AbortWithError(404, err)
-	// }
-	
+	userGG := GGUser{
+		Name:        user.Login,
+		Email:       user.Email,
+		DisplayName: user.Name,
+	}
+	err = CheckUser(userGG)
+	if err != nil {
+		ctx.AbortWithError(404, err)
+	}
+
 	signedRefreshToken, err := jwtWrapper.RefreshToken(user.Email)
 	if err != nil {
 		log.Println(err)

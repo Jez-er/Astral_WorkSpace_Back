@@ -24,6 +24,7 @@ func CheckUser(user GGUser) error {
 			UserId:      id,
 			Email:       user.Email,
 			Name:        user.Name,
+			DisplayName: user.DisplayName,
 			WorkspaceID: 1,
 			WorkSpace: ws.Workspace{
 				Key:         id,
