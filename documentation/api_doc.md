@@ -201,7 +201,7 @@ await ( await fetch("https://localhost:3001/api/workspace/getSpace/:id", { // ID
 Описание...
 - `/api/forgetPass/sendCode` Отправка кода на почту
 ```javascript
-await ( await fetch("https://localhost:3001/api/forgetPass/sendCode", {
+await ( await fetch("https://localhost:3001/api/forget/sendCode", {
   "method": "POST",
   "body":JSON.stringify({
     "email": "почта",
@@ -219,7 +219,7 @@ await ( await fetch("https://localhost:3001/api/forgetPass/sendCode", {
 Описание...
 - `/api/forgetPass/updatePass` Обновление пароля  
 ```javascript
-await ( await fetch("https://localhost:3001/api/forgetPass/updatePass", {
+await ( await fetch("https://localhost:3001/api/forget/updatePass", {
   "method": "PUT",
   "body":JSON.stringify({
     "email": "почта",
