@@ -3,7 +3,7 @@ package routes
 import (
 	gl "Astral/internal/Oauth2"
 	"Astral/internal/jwt/controllers"
-
+	up "Astral/internal/jwt/recoveryPass"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,5 +26,10 @@ func RegisterPublicRoutes(r *gin.RouterGroup) {
 	{
 		callback.GET("/google", gl.GoogleCallBack)
 		callback.GET("/github", gl.GithubCallBack)
+	}
+	forget := r.Group("forget")
+	{
+		forget.POST("/sendCode",up.SendCode)
+		forget.PUT("/updatePass",up.ChangePassword)
 	}
 }

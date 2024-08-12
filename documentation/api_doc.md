@@ -195,3 +195,43 @@ await ( await fetch("https://localhost:3001/api/workspace/getSpace/:id", { // ID
 }) ).json()
 ```
 
+------
+
+#### Send code email
+Описание...
+- `/api/forgetPass/sendCode` Отправка кода на почту
+```javascript
+await ( await fetch("https://localhost:3001/api/forgetPass/sendCode", {
+  "method": "POST",
+  "body":JSON.stringify({
+    "email": "почта",
+  }), ,
+  "headers": {
+    "Content-Type": "application/json"
+    (Тут все хедеры что нужны)
+  }
+}) ).json()
+```
+
+------
+
+#### Update password
+Описание...
+- `/api/forgetPass/updatePass` Обновление пароля  
+```javascript
+await ( await fetch("https://localhost:3001/api/forgetPass/updatePass", {
+  "method": "PUT",
+  "body":JSON.stringify({
+    "email": "почта",
+    "code": "который юзер отправляет",
+    "checkCode":"который тебе пришел в ответ(апи выше)",
+    "newPass":"новый пароль"
+  }), ,
+  "headers": {
+    "Content-Type": "application/json"
+    (Тут все хедеры что нужны)
+  }
+}) ).json()
+```
+
+
