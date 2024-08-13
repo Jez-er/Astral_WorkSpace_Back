@@ -4,6 +4,8 @@ import (
 	gl "Astral/internal/Oauth2"
 	"Astral/internal/jwt/controllers"
 	up "Astral/internal/jwt/recoveryPass"
+	upd "Astral/internal/jwt/update"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,7 +31,12 @@ func RegisterPublicRoutes(r *gin.RouterGroup) {
 	}
 	forget := r.Group("forget")
 	{
-		forget.POST("/sendCode",up.SendCode)
-		forget.PUT("/updatePass",up.ChangePassword)
+		forget.POST("/sendCode", up.SendCode)
+		forget.PUT("/updatePass", up.ChangePassword)
+	}
+	update := r.Group("/update")
+	{
+		update.PUT("/email", upd.UpdateEmail)
+		update.PUT("/displayName", upd.UpdateDisplayName)
 	}
 }

@@ -234,4 +234,43 @@ await ( await fetch("https://localhost:3001/api/forget/updatePass", {
 }) ).json()
 ```
 
+------
+
+#### Update email
+Описание...
+- `/api/update/email` Обновление email 
+```javascript
+await ( await fetch("https://localhost:3001/api/update/email", {
+  "method": "PUT",
+  "body":JSON.stringify({
+    "email": "новая почта",
+    "userId": "айди юзера"
+  }), ,
+  "headers": {
+    "Content-Type": "application/json"
+    (Тут все хедеры что нужны)
+  }
+}) ).json()
+```
+
+------
+
+#### Update displayName
+Описание...
+- `/api/update/displayName` Обновление displayName 
+```javascript
+await ( await fetch("https://localhost:3001/api/update/displayName", {
+  "method": "PUT",
+  "body":JSON.stringify({
+    "displayName": "новый displayName",
+    "userId": "айди юзера"
+  }), ,
+  "headers": {
+    "Content-Type": "application/json"
+    (Тут все хедеры что нужны)
+  }
+}) ).json()
+```
+
+
 
