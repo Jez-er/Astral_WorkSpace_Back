@@ -272,5 +272,25 @@ await ( await fetch("https://localhost:3001/api/update/displayName", {
 }) ).json()
 ```
 
+------
+
+#### Load photo
+Описание...
+- `/api/common/loadphoto` Обновление displayName 
+```javascript
+await ( await fetch("https://localhost:3001/api/common/loadphoto", {
+  "method": "POST",
+  "body":JSON.stringify({
+    "userId": "айди юзера"
+  }), ,
+  "headers": {
+    "Content-Type": "application/json"
+    (Тут все хедеры что нужны)
+  }
+}) ).json()
+```
+
+
+
 
 
