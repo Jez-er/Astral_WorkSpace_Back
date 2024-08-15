@@ -103,6 +103,7 @@ func GoogleCallBack(ctx *gin.Context) {
 		Name:        user.Name,
 		Email:       user.Email,
 		DisplayName: user.GivenName,
+		Image: user.Picture,
 	}
 	err = CheckUser(userGG)
 	if err != nil {

@@ -25,6 +25,7 @@ type UsData struct {
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	DisplayName string `json:"displayName"`
+	Image string `json:"image"`
 }
 
 /* обновленный токен на возврат */
@@ -152,6 +153,7 @@ func Login(c *gin.Context) {
 		Email:       user.Email,
 		DisplayName: user.DisplayName,
 		UserId:      user.UserId,
+		Image: user.Image,
 	}})
 }
 
@@ -261,8 +263,10 @@ func GetUserInfo(c *gin.Context) {
 
 	// Формирование ответа
 	c.JSON(http.StatusOK, gin.H{
+		"UserID": user.UserId,
 		"Name":        user.Name,
 		"DisplayName": user.DisplayName,
 		"Email":       user.Email,
+		"Image": user.Image,
 	})
 }
