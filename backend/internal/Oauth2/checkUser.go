@@ -12,6 +12,7 @@ type GGUser struct {
 	Name        string `json:"name"`
 	Email       string `json:"email"`
 	DisplayName string `json:"displayName"`
+	Image string `json:"image"`
 }
 
 func CheckUser(user GGUser) error {
@@ -25,12 +26,13 @@ func CheckUser(user GGUser) error {
 			Email:       user.Email,
 			Name:        user.Name,
 			DisplayName: user.DisplayName,
+			Image: user.Image,
 			WorkspaceID: 1,
 			WorkSpace: ws.Workspace{
 				Key:         id,
 				Title:       "First workspace",
 				Description: "Test",
-				LogoColor:   "#ffffff",
+				LogoColor:   "Purple",
 			},
 		}
 		res := db.GlobalDB.Create(&userDB)

@@ -168,6 +168,7 @@ func GithubCallBack(ctx *gin.Context) {
 		Name:        user.Login,
 		Email:       user.Email,
 		DisplayName: user.Name,
+		Image: user.AvatarURL,
 	}
 	err = CheckUser(userGG)
 	if err != nil {
