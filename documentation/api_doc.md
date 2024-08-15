@@ -281,6 +281,14 @@ await ( await fetch("https://localhost:3001/api/update/displayName", {
 await ( await fetch("https://localhost:3001/api/common/loadphoto", {
   "method": "POST",
   "body":JSON.stringify({
+    "name":"",
+    "email":"",
+    "password":"",
+    "howDid":"",
+    "displayName":"",
+    "key":"",
+    "title":"",
+    "logoColor":"",    
     "userId": "айди юзера"
   }), ,
   "headers": {

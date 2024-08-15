@@ -8,9 +8,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type Email struct {
+	Email  string `json:"email"`
+	UserId string `json:"userId"`
+}
+
+type DisplayName struct {
+	DisplayName string `json:"displayName"`
+	UserId      string `json:"userId"`
+}
+
 func UpdateEmail(c *gin.Context) {
+	var email Email
 	var user models.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&email); err != nil {
 		log.Println(err)
 		c.JSON(500, gin.H{
 			"Error": "Invalid inputs",
@@ -18,9 +29,9 @@ func UpdateEmail(c *gin.Context) {
 		})
 		return
 	}
-	res := database.GlobalDB.Model(&user).Where("id = ?", user.UserId).Updates(
+	res := database.GlobalDB.Model(&user).Where("id = ?", email.UserId).Updates(
 		models.User{
-			Email: user.Email,
+			Email: email.Email,
 		})
 	if res.Error != nil {
 		log.Println(res.Error)
@@ -37,8 +48,9 @@ func UpdateEmail(c *gin.Context) {
 }
 
 func UpdateDisplayName(c *gin.Context) {
+	var displayName DisplayName
 	var user models.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBindJSON(&displayName); err != nil {
 		log.Println(err)
 		c.JSON(500, gin.H{
 			"Error": "Invalid inputs",
@@ -46,9 +58,9 @@ func UpdateDisplayName(c *gin.Context) {
 		})
 		return
 	}
-	res := database.GlobalDB.Model(&user).Where("id = ?", user.UserId).Updates(
+	res := database.GlobalDB.Model(&user).Where("id = ?", displayName.UserId).Updates(
 		models.User{
-			DisplayName: user.DisplayName,
+			DisplayName: displayName.DisplayName,
 		})
 	if res.Error != nil {
 		log.Println(res.Error)
