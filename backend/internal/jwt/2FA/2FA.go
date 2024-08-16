@@ -1,4 +1,4 @@
-package recoverypass
+package fa
 
 import (
 	"Astral/internal/App/database"
@@ -11,42 +11,39 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
-type ChangePass struct {
+type FAApply struct {
 	CheckCode string `json:"checkCode"`
 	Code      string `json:"code"`
 	Email     string `json:"email"`
-	NewPass   string `json:"newPass"`
 }
 
-func ChangePassword(c *gin.Context) {
-	var changePass ChangePass
+func FA(c *gin.Context) {
+	var fa FAApply
 	var user models.User
-	if err := c.ShouldBindJSON(&changePass); err != nil {
+	if err := c.ShouldBindJSON(&fa); err != nil {
 		log.Println(err)
 		c.JSON(400, gin.H{
 			"Error": "Invalid Inputs",
 		})
 		return
 	}
-	if changePass.CheckCode != changePass.Code {
+	if fa.CheckCode != fa.Code {
 		c.JSON(400, gin.H{"Error": "Invalid Check Code"})
 		return
 	}
-	UpdatedPassword(c, user, changePass)
+	UpdatedFA(c, user, fa)
 	c.JSON(200, gin.H{
-		"Message": "Success change password",
+		"Message": "Success 2FA",
 	})
-
 }
 
 func SendEmail(mail, code string) error {
 	senderEmail := os.Getenv("SENDER_EMAIL")
 	senderPassword := os.Getenv("SENDER_PASSWORD")
 	recipientEmail := mail
-	subject := "Восстановление пароля"
+	subject := "Подтвердить почту"
 	body := code
 	// Настройки SMTP-сервера
 	smtpHost := "smtp.list.ru"
@@ -72,7 +69,7 @@ func SendEmail(mail, code string) error {
 }
 
 func SendCode(c *gin.Context) {
-	var user ChangePass
+	var user FAApply
 	if err := c.ShouldBindJSON(&user); err != nil {
 		log.Println(err)
 		c.JSON(400, gin.H{
@@ -105,18 +102,10 @@ func GenerateCode() string {
 	return code
 }
 
-func UpdatedPassword(c *gin.Context, user models.User, changePass ChangePass) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(changePass.NewPass), 14)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"Error": "Error HashPass",
-			"Err":   err,
-		})
-		c.Abort()
-	}
-	res := database.GlobalDB.Model(&user).Where("email = ?", changePass.Email).Updates(
+func UpdatedFA(c *gin.Context, user models.User, fa FAApply) {
+	res := database.GlobalDB.Model(&user).Where("email = ?", fa.Email).Updates(
 		models.User{
-			Password: string(bytes),
+			FA: true,
 		})
 	if res.RowsAffected == 0 {
 		c.JSON(500, gin.H{

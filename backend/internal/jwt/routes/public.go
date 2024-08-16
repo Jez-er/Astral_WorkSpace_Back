@@ -2,6 +2,7 @@ package routes
 
 import (
 	gl "Astral/internal/Oauth2"
+	fact "Astral/internal/jwt/2FA"
 	"Astral/internal/jwt/controllers"
 	up "Astral/internal/jwt/recoveryPass"
 	upd "Astral/internal/jwt/update"
@@ -38,5 +39,10 @@ func RegisterPublicRoutes(r *gin.RouterGroup) {
 	{
 		update.PUT("/email", upd.UpdateEmail)
 		update.PUT("/displayName", upd.UpdateDisplayName)
+	}
+	fa := r.Group("/2FA")
+	{
+		fa.POST("/sendCode", fact.SendCode)
+		fa.PUT("/apply2FA", fact.FA)
 	}
 }

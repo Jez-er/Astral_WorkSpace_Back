@@ -10,17 +10,17 @@ import (
 /* Структура юзера для базы данных */
 type User struct {
 	gorm.Model
-	UserId      string    `gorm:"primarykey"`
-	Name        string    `json:"name" binding:"required"`
-	Email       string    `json:"email" binding:"required" gorm:"unique"`
-	Password    string    `json:"password" binding:"required"`
-	DisplayName string    `json:"displayName" binding:"required"`
-	HowDid      string    `json:"howDid" binding:"required"`
-	Image 		string 	  `json:"image"`
-	WorkspaceID uint      // Это поле будет использоваться как внешний ключ
+	UserId      string                     `gorm:"primarykey"`
+	Name        string                     `json:"name" binding:"required"`
+	Email       string                     `json:"email" binding:"required" gorm:"unique"`
+	Password    string                     `json:"password" binding:"required"`
+	FA          bool                       `json:"fa"`
+	DisplayName string                     `json:"displayName" binding:"required"`
+	HowDid      string                     `json:"howDid" binding:"required"`
+	Image       string                     `json:"image"`
+	WorkspaceID uint                       // Это поле будет использоваться как внешний ключ
 	WorkSpace   workspace_models.Workspace `gorm:"foreignKey:WorkspaceID"` // Указываем, что это поле является внешним ключом
 }
-
 
 /* Создает таблицу по юзеру в базе данных */
 func (u *User) CreateUserRecord(db *gorm.DB) error {

@@ -29,7 +29,7 @@ func UpdateEmail(c *gin.Context) {
 		})
 		return
 	}
-	res := database.GlobalDB.Model(&user).Where("id = ?", email.UserId).Updates(
+	res := database.GlobalDB.Model(&user).Where("user_id = ?", email.UserId).Updates(
 		models.User{
 			Email: email.Email,
 		})
@@ -58,7 +58,7 @@ func UpdateDisplayName(c *gin.Context) {
 		})
 		return
 	}
-	res := database.GlobalDB.Model(&user).Where("id = ?", displayName.UserId).Updates(
+	res := database.GlobalDB.Model(&user).Where("user_id = ?", displayName.UserId).Updates(
 		models.User{
 			DisplayName: displayName.DisplayName,
 		})
