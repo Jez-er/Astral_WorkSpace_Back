@@ -2,6 +2,7 @@ package update
 
 import (
 	"Astral/internal/App/database"
+	"Astral/internal/jwt/auth"
 	"Astral/internal/jwt/models"
 	"log"
 
@@ -29,7 +30,7 @@ func UpdateEmail(c *gin.Context) {
 		})
 		return
 	}
-	res := database.GlobalDB.Model(&user).Where("id = ?", email.UserId).Updates(
+	res := database.GlobalDB.Model(&user).Where("user_id = ?", email.UserId).Updates(
 		models.User{
 			Email: email.Email,
 		})
@@ -41,9 +42,45 @@ func UpdateEmail(c *gin.Context) {
 		})
 		return
 	}
+
+	jwtWrapper := auth.JwtWrapper{
+		SecretKey:         "verysecretkey",
+		Issuer:            "AuthService",
+		ExpirationMinutes: 1,
+		ExpirationHours:   12,
+	}
+	signedToken, err := jwtWrapper.GenerateToken(email.Email)
+	if err != nil {
+		log.Println(err)
+		c.JSON(500, gin.H{
+			"Error": "Error Signing Token",
+		})
+		c.Abort()
+		return
+	}
+	signedRefreshToken, err := jwtWrapper.RefreshToken(email.Email)
+	if err != nil {
+		log.Println(err)
+		c.JSON(500, gin.H{
+			"Error": "Error Signing Token",
+		})
+		c.Abort()
+		return
+	}
+
+	// Установка рефреш-токена в куки
+	c.SetCookie(
+		"refresh_token",    // имя куки
+		signedRefreshToken, // значение куки
+		60*60*24*30,        // срок действия куки в секундах (30 дней)
+		"/",                // путь
+		"localhost",        // домен
+		false,              // secure (установить true, если используется HTTPS)
+		true,               // httpOnly
+	)
+
 	c.JSON(200, gin.H{
-		"Message": "success",
-		"User":    user,
+		"token": signedToken,
 	})
 }
 
@@ -58,7 +95,7 @@ func UpdateDisplayName(c *gin.Context) {
 		})
 		return
 	}
-	res := database.GlobalDB.Model(&user).Where("id = ?", displayName.UserId).Updates(
+	res := database.GlobalDB.Model(&user).Where("user_id = ?", displayName.UserId).Updates(
 		models.User{
 			DisplayName: displayName.DisplayName,
 		})
