@@ -44,5 +44,6 @@ func RegisterPublicRoutes(r *gin.RouterGroup) {
 	{
 		fa.POST("/sendCode", fact.SendCode)
 		fa.PUT("/apply2FA", fact.FA)
+		fa.PUT("/change2FA", fact.Change2FA)
 	}
 }

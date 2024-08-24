@@ -69,8 +69,8 @@ func SendEmail(mail, code string) error {
 }
 
 func SendCode(c *gin.Context) {
-	var user FAApply
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var fa FAApply
+	if err := c.ShouldBindJSON(&fa); err != nil {
 		log.Println(err)
 		c.JSON(400, gin.H{
 			"Error": "Invalid Inputs",
@@ -78,7 +78,7 @@ func SendCode(c *gin.Context) {
 		return
 	}
 	code := GenerateCode()
-	err := SendEmail(user.Email, code)
+	err := SendEmail(fa.Email, code)
 	if err != nil {
 		log.Println(err)
 		c.JSON(400, gin.H{
@@ -109,9 +109,38 @@ func UpdatedFA(c *gin.Context, user models.User, fa FAApply) {
 		})
 	if res.RowsAffected == 0 {
 		c.JSON(500, gin.H{
-			"Error": "Error Updated Pass",
+			"Error": "Error Updated 2FA",
 			"Err":   res.Error,
 		})
 		c.Abort()
 	}
+}
+
+func Change2FA(c *gin.Context) {
+	var fa FAApply
+	var user models.User
+	if err := c.ShouldBindJSON(&fa); err != nil {
+		log.Println(err)
+		c.JSON(400, gin.H{
+			"Error": "Invalid Inputs",
+		})
+		return
+	}
+
+	res := database.GlobalDB.Model(&user).Where("email = ? AND fa = ?", fa.Email, true).Updates(
+		models.User{
+			FA: false,
+		})
+	if res.Error != nil {
+		c.JSON(500, gin.H{
+			"Error": "Error Updated 2FA",
+			"Err":   res.Error,
+		})
+		c.Abort()
+	}
+	c.JSON(200, gin.H{
+		"Message": "success",
+		"user":    user,
+		"2FA":     user.FA,
+	})
 }
