@@ -32,8 +32,8 @@ func RegisterPublicRoutes(r *gin.RouterGroup) {
 	}
 	forget := r.Group("forget")
 	{
-		forget.POST("/sendCode", up.SendCode)
-		forget.PUT("/updatePass", up.ChangePassword)
+		forget.POST("/code", up.SendCode)
+		forget.PUT("/pass", up.ChangePassword)
 	}
 	update := r.Group("/update")
 	{
@@ -42,7 +42,7 @@ func RegisterPublicRoutes(r *gin.RouterGroup) {
 	}
 	fa := r.Group("/2FA")
 	{
-		fa.POST("/sendCode", fact.SendCode)
+		fa.POST("/code", fact.SendCode)
 		fa.PUT("/apply2FA", fact.FA)
 		fa.PUT("/change2FA", fact.Change2FA)
 	}

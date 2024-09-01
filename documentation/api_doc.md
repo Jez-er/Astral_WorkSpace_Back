@@ -114,9 +114,9 @@ await ( await fetch("https://localhost:3001/api/oauth/github", {
 
 #### Create WorkSpace
 Описание...
-- `/api/workspace/createSpace` Создание пространства  
+- `/api/workspace/space` Создание пространства  
 ```javascript
-await ( await fetch("https://localhost:3001/api/workspace/createSpace", {
+await ( await fetch("https://localhost:3001/api/workspace/space", {
   "method": "POST",
   "body":JSON.stringify({
     "UserID": uuid пользователя, с аккаунта которого выполняется запрос,
@@ -135,9 +135,9 @@ await ( await fetch("https://localhost:3001/api/workspace/createSpace", {
 
 #### Update WorkSpace
 Описание...
-- `/api/workspace/updateSpace/:id` Обновление пространства
+- `/api/workspace/space/:id` Обновление пространства
 ```javascript
-await ( await fetch("https://localhost:3001/api/workspace/updateSpace/:id", { // ID рабочего пространства
+await ( await fetch("https://localhost:3001/api/workspace/space/:id", { // ID рабочего пространства
   "method": "PUT",
   "body":JSON.stringify({
     "description": "Новый Бла бла бла",
@@ -154,9 +154,9 @@ await ( await fetch("https://localhost:3001/api/workspace/updateSpace/:id", { //
 
 #### Delete WorkSpace
 Описание...
-- `/api/workspace/deleteSpace/:id` Удаление пространства
+- `/api/workspace/space/:id` Удаление пространства
 ```javascript
-await ( await fetch("https://localhost:3001/api/workspace/deleteSpace/:id", { // ID рабочего пространства
+await ( await fetch("https://localhost:3001/api/workspace/space/:id", { // ID рабочего пространства
   "method": "DELETE",
   "body": ,
   "headers": {
@@ -169,9 +169,9 @@ await ( await fetch("https://localhost:3001/api/workspace/deleteSpace/:id", { //
 
 #### Get WorkSpaces
 Описание...
-- `/api/workspace/getSpaces/:user_id` Запрос на все пространства
+- `/api/workspace/spaces/:user_id` Запрос на все пространства
 ```javascript
-await ( await fetch("https://localhost:3001/api/workspace/getSpaces/:user_id", { // ID пользователя
+await ( await fetch("https://localhost:3001/api/workspace/spaces/:user_id", { // ID пользователя
   "method": "GET",
   "body": ,
   "headers": {
@@ -184,9 +184,9 @@ await ( await fetch("https://localhost:3001/api/workspace/getSpaces/:user_id", {
 
 #### Get WorkSpace
 Описание...
-- `/api/workspace/getSpace/:user_id` Запрос на 1 пространствo
+- `/api/workspace/space/:user_id` Запрос на 1 пространствo
 ```javascript
-await ( await fetch("https://localhost:3001/api/workspace/getSpace/:id", { // ID рабочего пространства
+await ( await fetch("https://localhost:3001/api/workspace/space/:id", { // ID рабочего пространства
   "method": "GET",
   "body": ,
   "headers": {
@@ -201,7 +201,7 @@ await ( await fetch("https://localhost:3001/api/workspace/getSpace/:id", { // ID
 Описание...
 - `/api/forgetPass/sendCode` Отправка кода на почту
 ```javascript
-await ( await fetch("https://localhost:3001/api/forget/sendCode", {
+await ( await fetch("https://localhost:3001/api/forget/code", {
   "method": "POST",
   "body":JSON.stringify({
     "email": "почта",
@@ -219,7 +219,7 @@ await ( await fetch("https://localhost:3001/api/forget/sendCode", {
 Описание...
 - `/api/forgetPass/updatePass` Обновление пароля  
 ```javascript
-await ( await fetch("https://localhost:3001/api/forget/updatePass", {
+await ( await fetch("https://localhost:3001/api/forget/pass", {
   "method": "PUT",
   "body":JSON.stringify({
     "email": "почта",
@@ -276,9 +276,9 @@ await ( await fetch("https://localhost:3001/api/update/displayName", {
 
 #### Load photo
 Описание...
-- `/api/common/loadphoto` Обновление displayName 
+- `/api/common/photo` Обновление displayName 
 ```javascript
-await ( await fetch("https://localhost:3001/api/common/loadphoto", {
+await ( await fetch("https://localhost:3001/api/common/photo", {
   "method": "POST",
   "body":JSON.stringify({
     "name":"",

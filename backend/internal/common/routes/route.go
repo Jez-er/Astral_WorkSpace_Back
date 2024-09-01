@@ -9,6 +9,6 @@ import (
 func CommonRoutes(r *gin.RouterGroup) {
 	workspace := r.Group("/common")
 	{
-		workspace.POST("/loadphoto", loadphoto.DownloadFile)
+		workspace.POST("/photo", loadphoto.DownloadFile)
 	}
 }

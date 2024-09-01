@@ -7,15 +7,23 @@ import (
 	"log"
 	"os"
 
+	"github.com/go-redis/redis"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 /* Глобальная переменная для работы с базой данных */
 var GlobalDB *gorm.DB
+var RedisClient *redis.Client
 
 /* Функция для подключения базы данных */
 func InitDatabase() (err error) {
+	RedisClient = redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+
 	localhost := "localhost"
 	db := os.Getenv("DB_DB")
 	user := os.Getenv("DB_USER")
@@ -32,7 +40,7 @@ func InitDatabase() (err error) {
 	if err != nil {
 		return err
 	}
-	err = GlobalDB.AutoMigrate(&models.User{},&workspace_models.Workspace{}) // Используем структуру из models
+	err = GlobalDB.AutoMigrate(&models.User{}, &workspace_models.Workspace{}) // Используем структуру из models
 	if err != nil {
 		log.Fatal("Error connecting to the database...", err)
 	}

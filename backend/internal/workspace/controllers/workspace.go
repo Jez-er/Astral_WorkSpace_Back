@@ -3,13 +3,16 @@ package workspace_controller
 import (
 	"Astral/internal/App/database"
 	workspace_models "Astral/internal/workspace/models"
+	"encoding/json"
 	"log"
+	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AddUserStruct struct {
-	ID   uint   `json:"id"`
+	ID  uint   `json:"id"`
 	Key string `json:"key"`
 }
 
@@ -88,28 +91,120 @@ func UpdateSpace(c *gin.Context) {
 
 // Все пространства
 func GetWorkspaces(c *gin.Context) {
+	var mu sync.Mutex
+	mu.Lock()
+	defer mu.Unlock()
 	user := c.Param("user")
+
+	cachedWorkspaces, err := database.RedisClient.Get("workspaces").Bytes()
+	if err != nil {
+		workspaces := fetchWorkspaces(c, user)
+		cachedWorkspaces, err = json.Marshal(workspaces)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"Error": "Error marshal workspaces",
+				"Err":   err,
+			})
+			c.Abort()
+		}
+
+		err = database.RedisClient.Set("workspaces", cachedWorkspaces, 10*time.Second).Err()
+		if err != nil {
+			c.JSON(500, gin.H{
+				"Error": "Error set workspaces redis",
+				"Err":   err,
+			})
+			c.Abort()
+		}
+
+		c.JSON(200, gin.H{
+			"WorkSpace": workspaces,
+			"Message":   "postgres",
+		})
+		return
+	}
+	workspaces := []*workspace_models.Workspace{}
+
+	err = json.Unmarshal(cachedWorkspaces, &workspaces)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"Err":     err,
+			"Message": "Error unmarshal workspace",
+		})
+	}
+
+	c.JSON(200, gin.H{
+		"workspaces": workspaces,
+		"Message":    "redis",
+	})
+}
+
+func fetchWorkspaces(c *gin.Context, user string) []*workspace_models.Workspace {
 	workspace := []*workspace_models.Workspace{}
 	res := database.GlobalDB.Where("? IN (key, key2, key3)", user).Find(&workspace)
 
 	if res.Error != nil {
 		c.JSON(500, gin.H{
-			"Error": "Error Get WorkSpaces",
+			"Error": "Error get workspaces",
 			"Err":   res.Error,
 		})
-		return
+		c.Abort()
 	}
-
-	c.JSON(200, gin.H{
-		"WorkSpaces": workspace,
-	})
+	return workspace
 }
 
 // 1 пространство
 func GetWorkspace(c *gin.Context) {
+	var mu sync.Mutex
+	mu.Lock()
+	defer mu.Unlock()
 	id := c.Param("id") // ID рабочего пространства
+
+	cachedWorkspaces, err := database.RedisClient.Get("workspace").Bytes()
+	if err != nil {
+		workspace := fetchWorkspace(c, id)
+		cachedWorkspaces, err = json.Marshal(workspace)
+		if err != nil {
+			c.JSON(500, gin.H{
+				"Error": "Error marshal workspace",
+				"Err":   err,
+			})
+			c.Abort()
+		}
+
+		err = database.RedisClient.Set("workspace", cachedWorkspaces, 10*time.Second).Err()
+		if err != nil {
+			c.JSON(500, gin.H{
+				"Error": "Error set workspace redis",
+				"Err":   err,
+			})
+			c.Abort()
+		}
+
+		c.JSON(200, gin.H{
+			"WorkSpace": workspace,
+			"Message":   "postgres",
+		})
+		return
+	}
 	var workspace workspace_models.Workspace
 
+	err = json.Unmarshal(cachedWorkspaces, &workspace)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"Err":     err,
+			"Message": "Error unmarshal workspace",
+		})
+	}
+
+	c.JSON(200, gin.H{
+		"WorkSpace": workspace,
+		"Message":   "redis",
+	})
+}
+
+func fetchWorkspace(c *gin.Context, id string) workspace_models.Workspace {
+	var workspace workspace_models.Workspace
 	res := database.GlobalDB.Find(&workspace, "id = ?", id)
 	if res.Error != nil {
 		c.JSON(500, gin.H{
@@ -118,11 +213,8 @@ func GetWorkspace(c *gin.Context) {
 		})
 		c.Abort()
 	}
-	c.JSON(200, gin.H{
-		"WorkSpace": workspace,
-	})
+	return workspace
 }
-
 
 func AddSecondUser(c *gin.Context) {
 	var addUsers AddUserStruct
@@ -138,7 +230,7 @@ func AddSecondUser(c *gin.Context) {
 	}
 
 	// Поиск рабочего пространства по ID и ключу key2
-	res := database.GlobalDB.Where("id = ?", addUsers.ID,).First(&workspace)
+	res := database.GlobalDB.Where("id = ?", addUsers.ID).First(&workspace)
 	if res.Error != nil {
 		log.Println("Workspace not found:", res.Error)
 		c.JSON(404, gin.H{
@@ -149,7 +241,7 @@ func AddSecondUser(c *gin.Context) {
 
 	// Обновление рабочего пространства
 	res = database.GlobalDB.Model(&workspace).Where("id = ?", addUsers.ID).Updates(workspace_models.Workspace{
-		Key2: addUsers.Key, 
+		Key2: addUsers.Key,
 	})
 	if res.Error != nil {
 		log.Println("Error updating workspace:", res.Error)
@@ -177,7 +269,7 @@ func AddThirdUser(c *gin.Context) {
 	}
 
 	// Поиск рабочего пространства по ID и ключу key2
-	res := database.GlobalDB.Where("id = ?", addUsers.ID,).First(&workspace)
+	res := database.GlobalDB.Where("id = ?", addUsers.ID).First(&workspace)
 	if res.Error != nil {
 		log.Println("Workspace not found:", res.Error)
 		c.JSON(404, gin.H{
@@ -188,7 +280,7 @@ func AddThirdUser(c *gin.Context) {
 
 	// Обновление рабочего пространства
 	res = database.GlobalDB.Model(&workspace).Where("id = ?", addUsers.ID).Updates(workspace_models.Workspace{
-		Key3: addUsers.Key, 
+		Key3: addUsers.Key,
 	})
 	if res.Error != nil {
 		log.Println("Error updating workspace:", res.Error)
